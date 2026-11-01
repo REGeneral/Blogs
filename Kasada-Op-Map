@@ -1,0 +1,1376 @@
+# Opcodes classified so far (177).  Source: opcode_map.txt
+# e = X reader (immediate/register), G = o[5] reader, dst = a()'s own operand.
+
+op 0  (x1317)   =>  GPROPGLOBAL (GETGLOBAL + GETPROP)
+    function(n, e, a, v, i, o) {
+        a(n, i[0][e(n)]), a(n, e(n)[e(n)])
+    }
+
+op 1  (x3)   =>  BLSHIFT   e(n)<<r(n)   (e<<G)   [first-pass said BRSHIFT -> corrected]
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, e(n)<<r(n))
+    }
+
+op 2  (x109)   =>  DECLAREx4
+    function(n, e, a, v, i, o) {
+        for(var i=v(n), o=0; o<4; o++) {
+            var r=e(n);
+            i.M[r]=void 0
+        }
+    }
+
+op 3  (x70)   =>  SETPROP+GETVARx2
+    function(n, e, a, v, i, o) {
+        e(n)[e(n)]=e(n);
+        n:for(var i=0; i<2; i++) {
+            for(var o=e(n), r=v(n); r; r=r.c)if(o in r.M) {
+                a(n, r.M[o]);
+                continue n
+            }
+            throw 'ball'
+        }
+    }
+
+op 4  (x7588)   =>  SUB       e(n)-e(n)    (e-e)
+    function(n, e, a, v, i, o) {
+        a(n, e(n)-e(n))
+    }
+
+op 5  (x5919)   =>  GETVAR+GETPROP
+    function(n, e, a, v, i, o) {
+        for(var i=e(n), o=v(n); o; o=o.c)if(i in o.M) {
+            a(n, o.M[i]), a(n, e(n)[e(n)]);
+            return
+        }
+        throw 'ball'
+    }
+
+op 6  (x5)   =>  NEQ       r(n)!=r(n)   (G!=G)   loose !=
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)!=r(n))
+    }
+
+op 7  (x17587)   =>  SETVAR (local, no chain walk)
+    function(n, e, a, v, i, o) {
+        var i=e(n), o=e(n), r=v(n);
+        r.M[i]=o
+    }
+
+op 8  (x121)   =>  CARR      new Array(e(n))
+    function(n, e, a, v, i, o) {
+        a(n, new Array(e(n)))
+    }
+
+op 9  (x25)   =>  BRSHIFT   e(n)>>r(n)   (e>>G)   [first-pass said BLSHIFT -> corrected]
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, e(n)>>r(n))
+    }
+
+op 10  (x16932)   =>  LT        r(n)<r(n)    (G<G)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)<r(n))
+    }
+
+op 11  (x1253)   =>  CREATEVMFUNC (build VM fn, stamp o[4] tag {V,c,I,Z}, store; + trailing JMP)
+    function(n, e, a, v, i, o) {
+        var r, l=e(n), u=e(n), _=e(n), h=v(n), t=o[2], b=o[3], d=o[4], p=function() {
+            var f=t();
+            f.r[3]=arguments;
+            for(var s=0; s<arguments.length; s++)f.r[s+4]=arguments[s];
+            return f.r[1]= {
+                u:this,
+                r:[0],
+                M:[],
+                c:h,
+                i:p,
+                Z:h==null?void 0:h.Z
+            }, f.r[0]=l, b(f), f.r[2]
+        };
+        try {
+            Object.defineProperty(p, "length", {
+                value:_
+            }), Object.defineProperty(p, "name", {
+                value:u
+            })
+        } catch(w) {
+        }
+        p[d]= {
+            V:l,
+            c:h,
+            I:p,
+            Z:(h==null?void 0:h.Z)!==void 0?new Map(Array.from((r=n.w)!==null&&r!==void 0?r:[], function(w) {
+                return w.reverse()
+            })).get(h==null?void 0:h.Z):void 0
+        }, a(n, p), n.r[0]=e(n)
+    }
+
+op 12  (x460)   =>  GETVARx3 + SETPROP
+    function(n, e, a, v, i, o) {
+        for(var i=0; i<3; i++) {
+            for(var o=e(n), r=!1, l=v(n); l; l=l.c)if(o in l.M) {
+                a(n, l.M[o]), r=!0;
+                break
+            }
+            if(!r)throw 'ball'
+        }
+        e(n)[e(n)]=e(n)
+    }
+
+op 13  (x643)   =>  CREATEARR + SETPROP
+    function(n, e, a, v, i, o) {
+        a(n, new Array(e(n))), e(n)[e(n)]=e(n)
+    }
+
+op 14  (x3)   =>  BLSHIFT   e(n)<<e(n)   (e<<e)
+    function(n, e, a, v, i, o) {
+        a(n, e(n)<<e(n))
+    }
+
+op 15  (x14)   =>  CHECKINSTANCEOFREGVAL (G instanceof G)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)instanceof r(n))
+    }
+
+op 16  (x39)   =>  DIV       r(n)/r(n)    (G/G)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)/r(n))
+    }
+
+op 17  (x66)   =>  GETVAR + GETPROPx3
+    function(n, e, a, v, i, o) {
+        for(var i=e(n), o=v(n); o; o=o.c)if(i in o.M) {
+            a(n, o.M[i]), a(n, e(n)[e(n)]), a(n, e(n)[e(n)]), a(n, e(n)[e(n)]);
+            return
+        }
+        throw 'ball'
+    }
+
+op 18  (x12)   =>  SETVARUNDEF (declare 1)
+    function(n, e, a, v, i, o) {
+        var i=e(n), o=v(n);
+        o.M[i]=void 0
+    }
+
+op 19  (x665)   =>  DIV       r(n)/e(n)    (G/e)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)/e(n))
+    }
+
+op 20  (x1765)   =>  CALL (= op74 core: VM-fn reenter in place, else apply)
+    function(n, e, a, v, i, o) {
+        var r=e(n), l=e(n), u=e(n), _=o[4];
+        if(l[_]&&l[_].I===l) {
+            var h;
+            n.r=[l[_].V, {
+                u:r,
+                i:l,
+                r:n.r,
+                M:[],
+                c:l[_].c,
+                Z:(h=n.w)===null||h===void 0?void 0:h.get(l[_].Z)
+            }, void 0, function() {
+                return arguments
+            }.apply(void 0, u)];
+            for(var t=0; t<u.length; t++)n.r.push(u[t])
+        } else n.r[2]=l.apply(r, u)
+    }
+
+op 21  (x3508)   =>  GETVAR + SETPROP
+    function(n, e, a, v, i, o) {
+        for(var i=e(n), o=v(n); o; o=o.c)if(i in o.M) {
+            a(n, o.M[i]), e(n)[e(n)]=e(n);
+            return
+        }
+        throw 'ball'
+    }
+
+op 22  (x284)   =>  NEQ       e(n)!=r(n)   (e!=G)   loose !=
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, e(n)!=r(n))
+    }
+
+op 23  (x53)   =>  ENUMKEYS (new arr + for-in push KEYS + return)
+    function(n, e, a, v, i, o) {
+        var v=e(n), i=[];
+        for(var o in v)i.push(o);
+        a(n, i)
+    }
+
+op 24  (x216)   =>  GT        r(n)>e(n)    (G>e)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)>e(n))
+    }
+
+op 25  (x380)   =>  GETVARx2
+    function(n, e, a, v, i, o) {
+        n:for(var i=0; i<2; i++) {
+            for(var o=e(n), r=v(n); r; r=r.c)if(o in r.M) {
+                a(n, r.M[o]);
+                continue n
+            }
+            throw 'ball'
+        }
+    }
+
+op 26  (x1504)   =>  BITANDS (BAND, G&e)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)&e(n))
+    }
+
+op 27  (x2)   =>  GETVARx3 + SETPROP@i=1
+    function(n, e, a, v, i, o) {
+        for(var i=0; i<3; i++) {
+            for(var o=e(n), r=!1, l=v(n); l; l=l.c)if(o in l.M) {
+                a(n, l.M[o]), r=!0, i===1&&(e(n)[e(n)]=e(n));
+                break
+            }
+            if(!r)throw 'ball'
+        }
+    }
+
+op 28  (x4)   =>  SNEQ      e(n)!==e(n)  (e!==e)  strict !==
+    function(n, e, a, v, i, o) {
+        a(n, e(n)!==e(n))
+    }
+
+op 29  (x28)   =>  ET        e(n)===e(n)  (e===e)  strict ===
+    function(n, e, a, v, i, o) {
+        a(n, e(n)===e(n))
+    }
+
+op 30  (x23)   =>  EQTC      r(n)==e(n)   (G==e)   loose ==
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)==e(n))
+    }
+
+op 31  (x509)   =>  GETPROP + CREATEARR + GETVAR + SETPROP + CALL
+    function(n, e, a, v, i, o) {
+        a(n, e(n)[e(n)]), a(n, new Array(e(n)));
+        for(var r=e(n), l=v(n); l; l=l.c)if(r in l.M) {
+            a(n, l.M[r]), e(n)[e(n)]=e(n);
+            var u=e(n), _=e(n), h=e(n), t=o[4];
+            if(_[t]&&_[t].I===_) {
+                var b;
+                n.r=[_[t].V, {
+                    u:u,
+                    i:_,
+                    r:n.r,
+                    M:[],
+                    c:_[t].c,
+                    Z:(b=n.w)===null||b===void 0?void 0:b.get(_[t].Z)
+                }, void 0, function() {
+                    return arguments
+                }.apply(void 0, h)];
+                for(var d=0; d<h.length; d++)n.r.push(h[d])
+            } else n.r[2]=_.apply(u, h);
+            return
+        }
+        throw 'ball'
+    }
+
+op 32  (x249)   =>  XOR       e(n)^e(n)    (e^e)
+    function(n, e, a, v, i, o) {
+        a(n, e(n)^e(n))
+    }
+
+op 33  (x86)   =>  LOOPx2: GETVAR + GETPROP@i=0
+    function(n, e, a, v, i, o) {
+        n:for(var i=0; i<2; i++) {
+            for(var o=e(n), r=v(n); r; r=r.c)if(o in r.M) {
+                a(n, r.M[o]), i===0&&a(n, e(n)[e(n)]);
+                continue n
+            }
+            throw 'ball'
+        }
+    }
+
+op 34  (x185)   =>  ADD       r(n)+e(n)    (G+e)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)+e(n))
+    }
+
+op 35  (x2913)   =>  ADD       r(n)+e(n)    (G+e)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)+e(n))
+    }
+
+op 36  (x2909)   =>  CREATEVMFUNC (build VM fn, stamp o[4] tag {V,c,I,Z}, store)
+    function(n, e, a, v, i, o) {
+        var r, l=e(n), u=e(n), _=e(n), h=v(n), t=o[2], b=o[3], d=o[4], p=function() {
+            var f=t();
+            f.r[3]=arguments;
+            for(var s=0; s<arguments.length; s++)f.r[s+4]=arguments[s];
+            return f.r[1]= {
+                u:this,
+                r:[0],
+                M:[],
+                c:h,
+                i:p,
+                Z:h==null?void 0:h.Z
+            }, f.r[0]=l, b(f), f.r[2]
+        };
+        try {
+            Object.defineProperty(p, "length", {
+                value:_
+            }), Object.defineProperty(p, "name", {
+                value:u
+            })
+        } catch(w) {
+        }
+        p[d]= {
+            V:l,
+            c:h,
+            I:p,
+            Z:(h==null?void 0:h.Z)!==void 0?new Map(Array.from((r=n.w)!==null&&r!==void 0?r:[], function(w) {
+                return w.reverse()
+            })).get(h==null?void 0:h.Z):void 0
+        }, a(n, p)
+    }
+
+op 37  (x502)   =>  SETPROP + GETVAR + SETPROPx2
+    function(n, e, a, v, i, o) {
+        e(n)[e(n)]=e(n);
+        for(var i=e(n), o=v(n); o; o=o.c)if(i in o.M) {
+            a(n, o.M[i]), e(n)[e(n)]=e(n), e(n)[e(n)]=e(n);
+            return
+        }
+        throw 'ball'
+    }
+
+op 38  (x1)   =>  READHANDLER (reg=i[3]=u)
+    function(n, e, a, v, i, o) {
+        a(n, i[3])
+    }
+
+op 39  (x166868)   =>  CALL0 (reg=callee())
+    function(n, e, a, v, i, o) {
+        var v=e(n);
+        a(n, v())
+    }
+
+op 40  (x9702)   =>  LOOPx2: GETVAR + GETPROPx2@i=1
+    function(n, e, a, v, i, o) {
+        n:for(var i=0; i<2; i++) {
+            for(var o=e(n), r=v(n); r; r=r.c)if(o in r.M) {
+                a(n, r.M[o]), i===1&&(a(n, e(n)[e(n)]), a(n, e(n)[e(n)]));
+                continue n
+            }
+            throw 'ball'
+        }
+    }
+
+op 41  (x21)   =>  MOD       r(n)%r(n)    (G%G)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)%r(n))
+    }
+
+op 42  (x1546)   =>  LOOPx2: GETVAR + SETPROP@i=0
+    function(n, e, a, v, i, o) {
+        n:for(var i=0; i<2; i++) {
+            for(var o=e(n), r=v(n); r; r=r.c)if(o in r.M) {
+                a(n, r.M[o]), i===0&&(e(n)[e(n)]=e(n));
+                continue n
+            }
+            throw 'ball'
+        }
+    }
+
+op 43  (x29835)   =>  SETPROP
+    function(n, e, a, v, i, o) {
+        e(n)[e(n)]=e(n)
+    }
+
+op 44  (x528)   =>  SETVAR = {Y,T,H} snapshot, then clear Y/T/H
+    function(n, e, a, v, i, o) {
+        var i=e(n), o=v(n);
+        o.M[i]= {
+            a:o.Y,
+            o:o.T,
+            v:o.H
+        }, o.Y=void 0, o.T=void 0, o.H=void 0
+    }
+
+op 45  (x124)   =>  CREATEARR + SETPROP + CALL
+    function(n, e, a, v, i, o) {
+        a(n, new Array(e(n))), e(n)[e(n)]=e(n);
+        var r=e(n), l=e(n), u=e(n), _=o[4];
+        if(l[_]&&l[_].I===l) {
+            var h;
+            n.r=[l[_].V, {
+                u:r,
+                i:l,
+                r:n.r,
+                M:[],
+                c:l[_].c,
+                Z:(h=n.w)===null||h===void 0?void 0:h.get(l[_].Z)
+            }, void 0, function() {
+                return arguments
+            }.apply(void 0, u)];
+            for(var t=0; t<u.length; t++)n.r.push(u[t])
+        } else n.r[2]=l.apply(r, u)
+    }
+
+op 46  (x220)   =>  BURSHIFT  r(n)>>>e(n)  (G>>>e)  unsigned right shift
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)>>>e(n))
+    }
+
+op 47  (x6)   =>  GETPROPx4
+    function(n, e, a, v, i, o) {
+        a(n, e(n)[e(n)]), a(n, e(n)[e(n)]), a(n, e(n)[e(n)]), a(n, e(n)[e(n)])
+    }
+
+op 48  (x45)   =>  XOR       r(n)^e(n)    (G^e)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)^e(n))
+    }
+
+op 49  (x31)   =>  MOD       r(n)%e(n)    (G%e)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)%e(n))
+    }
+
+op 50  (x528)   =>  CATCHBIND (var=n.e; clear n.e)
+    function(n, e, a, v, i, o) {
+        var i=e(n), o=v(n);
+        o.M[i]=n.e, n.e=void 0
+    }
+
+op 51  (x4)   =>  GETVARx3 + GETPROP@i=0
+    function(n, e, a, v, i, o) {
+        n:for(var i=0; i<3; i++) {
+            for(var o=e(n), r=v(n); r; r=r.c)if(o in r.M) {
+                a(n, r.M[o]), i===0&&a(n, e(n)[e(n)]);
+                continue n
+            }
+            throw 'ball'
+        }
+    }
+
+op 52  (x19)   =>  GETVARx3 + GETPROP@i=1
+    function(n, e, a, v, i, o) {
+        n:for(var i=0; i<3; i++) {
+            for(var o=e(n), r=v(n); r; r=r.c)if(o in r.M) {
+                a(n, r.M[o]), i===1&&a(n, e(n)[e(n)]);
+                continue n
+            }
+            throw 'ball'
+        }
+    }
+
+op 53  (x27)   =>  DIV       e(n)/e(n)    (e/e)
+    function(n, e, a, v, i, o) {
+        a(n, e(n)/e(n))
+    }
+
+op 54  (x872)   =>  SNEQ      r(n)!==e(n)  (G!==e)  strict !==
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)!==e(n))
+    }
+
+op 55  (x3)   =>  BAND      e(n)&e(n)    (e&e)
+    function(n, e, a, v, i, o) {
+        a(n, e(n)&e(n))
+    }
+
+op 56  (x474)   =>  GTET      r(n)>=r(n)   (G>=G)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)>=r(n))
+    }
+
+op 57  (x3003)   =>  RETURN (undefined)
+    function(n, e, a, v, i, o) {
+        var r=o[0];
+        r(n, void 0)
+    }
+
+op 58  (x2)   =>  MOD       e(n)%e(n)    (e%e)
+    function(n, e, a, v, i, o) {
+        a(n, e(n)%e(n))
+    }
+
+op 59  (x22)   =>  GETVAR + SETPROPx3
+    function(n, e, a, v, i, o) {
+        for(var i=e(n), o=v(n); o; o=o.c)if(i in o.M) {
+            a(n, o.M[i]), e(n)[e(n)]=e(n), e(n)[e(n)]=e(n), e(n)[e(n)]=e(n);
+            return
+        }
+        throw 'ball'
+    }
+
+op 60  (x359)   =>  GETVAR + GETPROPx2
+    function(n, e, a, v, i, o) {
+        for(var i=e(n), o=v(n); o; o=o.c)if(i in o.M) {
+            a(n, o.M[i]), a(n, e(n)[e(n)]), a(n, e(n)[e(n)]);
+            return
+        }
+        throw 'ball'
+    }
+
+op 61  (x603)   =>  BOR       r(n)|e(n)    (G|e)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)|e(n))
+    }
+
+op 62  (x645)   =>  SUB       e(n)-e(n)    (e-e)
+    function(n, e, a, v, i, o) {
+        a(n, e(n)-e(n))
+    }
+
+op 63  (x412)   =>  SETPROP
+    function(n, e, a, v, i, o) {
+        e(n)[e(n)]=e(n)
+    }
+
+op 64  (x86)   =>  GETVAR + SETPROP, x2
+    function(n, e, a, v, i, o) {
+        for(var i=0; i<2; i++) {
+            for(var o=e(n), r=!1, l=v(n); l; l=l.c)if(o in l.M) {
+                a(n, l.M[o]), r=!0, e(n)[e(n)]=e(n);
+                break
+            }
+            if(!r)throw 'ball'
+        }
+    }
+
+op 65  (x505)   =>  BOR       r(n)|r(n)    (G|G)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)|r(n))
+    }
+
+op 66  (x333)   =>  BRSHIFT   r(n)>>e(n)   (G>>e)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)>>e(n))
+    }
+
+op 67  (x93)   =>  LTET      r(n)<=e(n)   (G<=e)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)<=e(n))
+    }
+
+op 68  (x7622)   =>  CHECKTRUESTORE (cond jump if truthy)
+    function(n, e, a, v, i, o) {
+        e(n)?n.r[0]=e(n):e(n)
+    }
+
+op 69  (x2774)   =>  GETVARx2 + GETPROP
+    function(n, e, a, v, i, o) {
+        for(var i=0; i<2; i++) {
+            for(var o=e(n), r=!1, l=v(n); l; l=l.c)if(o in l.M) {
+                a(n, l.M[o]), r=!0;
+                break
+            }
+            if(!r)throw 'ball'
+        }
+        a(n, e(n)[e(n)])
+    }
+
+op 70  (x15)   =>  SETPROP + GETVARx3
+    function(n, e, a, v, i, o) {
+        e(n)[e(n)]=e(n);
+        for(var i=0; i<3; i++) {
+            for(var o=e(n), r=!1, l=v(n); l; l=l.c)if(o in l.M) {
+                a(n, l.M[o]), r=!0;
+                break
+            }
+            if(!r)throw 'ball'
+        }
+    }
+
+op 71  (x180462)   =>  GETVARx2
+    function(n, e, a, v, i, o) {
+        n:for(var i=0; i<2; i++) {
+            for(var o=e(n), r=v(n); r; r=r.c)if(o in r.M) {
+                a(n, r.M[o]);
+                continue n
+            }
+            throw 'ball'
+        }
+    }
+
+op 72  (x442)   =>  DECLAREx3 (same idiom as op2)
+    function(n, e, a, v, i, o) {
+        for(var i=v(n), o=0; o<3; o++) {
+            var r=e(n);
+            i.M[r]=void 0
+        }
+    }
+
+op 73  (x2)   =>  SUB       e(n)-e(n)    (e-e)
+    function(n, e, a, v, i, o) {
+        a(n, e(n)-e(n))
+    }
+
+op 74  (x3793)   =>  CALL      method/fn call. VM-fn -> reenter bytecode in-place (frame switch, return-link r:n.r); else l.apply(recv,args)->r[2]. Fused obj[key]=val prefix.
+    function(n, e, a, v, i, o) {
+        e(n)[e(n)]=e(n);
+        var r=e(n), l=e(n), u=e(n), _=o[4];
+        if(l[_]&&l[_].I===l) {
+            var h;
+            n.r=[l[_].V, {
+                u:r,
+                i:l,
+                r:n.r,
+                M:[],
+                c:l[_].c,
+                Z:(h=n.w)===null||h===void 0?void 0:h.get(l[_].Z)
+            }, void 0, function() {
+                return arguments
+            }.apply(void 0, u)];
+            for(var t=0; t<u.length; t++)n.r.push(u[t])
+        } else n.r[2]=l.apply(r, u)
+    }
+
+op 75  (x354)   =>  GT        r(n)>e(n)    (G>e)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)>e(n))
+    }
+
+op 76  (x2689)   =>  TYPEOF (reg = typeof val)
+    function(n, e, a, v, i, o) {
+        a(n, typeof e(n))
+    }
+
+op 77  (x633)   =>  BLSHIFT   r(n)<<e(n)   (G<<e)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)<<e(n))
+    }
+
+op 78  (x3126)   =>  GETPROP + CREATEARRAY
+    function(n, e, a, v, i, o) {
+        a(n, e(n)[e(n)]), a(n, new Array(e(n)))
+    }
+
+op 79  (x122)   =>  SETPROPx2
+    function(n, e, a, v, i, o) {
+        e(n)[e(n)]=e(n), e(n)[e(n)]=e(n)
+    }
+
+op 80  (x139)   =>  READPENDINGEXCEPVAL (reg = n.e && n.e.X)
+    function(n, e, a, v, i, o) {
+        a(n, n.e&&n.e.X)
+    }
+
+op 81  (x2)   =>  BRSHIFT   r(n)>>r(n)   (G>>G)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)>>r(n))
+    }
+
+op 82  (x255)   =>  SETPROPx3
+    function(n, e, a, v, i, o) {
+        for(var a=0; a<3; a++)e(n)[e(n)]=e(n)
+    }
+
+op 83  (x24)   =>  XOR       e(n)^e(n)    (e^e)
+    function(n, e, a, v, i, o) {
+        a(n, e(n)^e(n))
+    }
+
+op 84  (x95)   =>  SETVAR + CHECKIFDIFFER(h!==t) + JMPIFFALSE
+    function(n, e, a, v, i, o) {
+        for(var r=e(n), l=e(n), u=v(n); u; u=u.c)if(r in u.M) {
+            u.M[r]=l;
+            var _=o[5], h=_(n), t=e(n);
+            a(n, h!==t), e(n)?e(n):n.r[0]=e(n);
+            return
+        }
+        throw 'ball'
+    }
+
+op 85  (x5408)   =>  GETGLOBAL (i[0][name])
+    function(n, e, a, v, i, o) {
+        a(n, i[0][e(n)])
+    }
+
+op 86  (x462)   =>  GETGLOBAL (hot cache i[1][0])
+    function(n, e, a, v, i, o) {
+        a(n, i[1][0])
+    }
+
+op 87  (x10933)   =>  RETURNNULL (halt dispatch)
+    function(n, e, a, v, i, o) {
+        return null
+    }
+
+op 88  (x2713)   =>  SETPROP + GETVAR
+    function(n, e, a, v, i, o) {
+        e(n)[e(n)]=e(n);
+        for(var i=e(n), o=v(n); o; o=o.c)if(i in o.M) {
+            a(n, o.M[i]);
+            return
+        }
+        throw 'ball'
+    }
+
+op 89  (x108)   =>  SETVARUNDEF + GETVAR + GETPROP
+    function(n, e, a, v, i, o) {
+        var i=e(n), o=v(n);
+        o.M[i]=void 0;
+        for(var r=e(n), l=v(n); l; l=l.c)if(r in l.M) {
+            a(n, l.M[r]), a(n, e(n)[e(n)]);
+            return
+        }
+        throw 'ball'
+    }
+
+op 90  (x164)   =>  SUB       r(n)-e(n)    (G-e)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)-e(n))
+    }
+
+op 91  (x575)   =>  XOR       r(n)^r(n)    (G^G)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)^r(n))
+    }
+
+op 92  (x37)   =>  GTET      r(n)>=e(n)   (G>=e)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)>=e(n))
+    }
+
+op 93  (x4031)   =>  ET        r(n)===e(n)  (G===e)  strict ===
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)===e(n))
+    }
+
+op 94  (x188)   =>  KEYEXISTBOOL (G in G)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)in r(n))
+    }
+
+op 95  (x6)   =>  GETVARx3 + SETPROP@i=0
+    function(n, e, a, v, i, o) {
+        for(var i=0; i<3; i++) {
+            for(var o=e(n), r=!1, l=v(n); l; l=l.c)if(o in l.M) {
+                a(n, l.M[o]), r=!0, i===0&&(e(n)[e(n)]=e(n));
+                break
+            }
+            if(!r)throw 'ball'
+        }
+    }
+
+op 96  (x526)   =>  RESTOREFINALLY (pop Y/T/H from temp unless completion pending; pairs w/ op44 SAVE)
+    function(n, e, a, v, i, o) {
+        var i=e(n), o=v(n);
+        if(o) {
+            var r=o.M[i];
+            o.M[i]=void 0;
+            var l=o.Y!==void 0||o.T!==void 0||n.e!==void 0;
+            l||!r||(o.Y=r.a, o.T=r.o, o.H=r.v)
+        }
+    }
+
+op 99  (x1056)   =>  SETVALFRAME (scope.s = loop/finally target)
+    function(n, e, a, v, i, o) {
+        var a=e(n);
+        n.r[1].s=a
+    }
+
+op 100  (x757)   =>  DELPROP (reg = delete obj[key])
+    function(n, e, a, v, i, o) {
+        var v=e(n), i=e(n);
+        a(n, delete v[i])
+    }
+
+op 101  (x7560)   =>  SETVAR (binds name = scope.i, the function)
+    function(n, e, a, v, i, o) {
+        var i=e(n), o=v(n), r=o.i;
+        o.M[i]=r
+    }
+
+op 103  (x863)   =>  SETPROPx3
+    function(n, e, a, v, i, o) {
+        for(var a=0; a<3; a++)e(n)[e(n)]=e(n)
+    }
+
+op 104  (x183176)   =>  CALL1     v=e(n),i=e(n); a(n,v(i))   reg[dst]=callee(arg), no `this` (free call)
+    function(n, e, a, v, i, o) {
+        var v=e(n), i=e(n);
+        a(n, v(i))
+    }
+
+op 105  (x526)   =>  ENDFINALLY (completion dispatch: throw n.e | finally .T/.H | return .Y | throw saved h)
+    function(n, e, a, v, i, o) {
+        var r=o[0], l=o[1], u=e(n), _=v(n), h=_==null?void 0:_.M[u];
+        _&&(_.M[u]=void 0), n.e?(_&&(_.T=void 0, _.H=void 0), l(n, n.e.X)):(_==null?void 0:_.T)!==void 0?(_.H=_.H-1, _.H===0?(n.r[0]=_.T, _.T=void 0, _.H=void 0):n.r[0]=_.s):_!=null&&_.Y?r(n, _.Y.X):h&&l(n, h.X)
+    }
+
+op 106  (x368)   =>  GETPROP
+    function(n, e, a, v, i, o) {
+        a(n, e(n)[e(n)])
+    }
+
+op 107  (x1)   =>  GETPROPx2 + GETVAR
+    function(n, e, a, v, i, o) {
+        a(n, e(n)[e(n)]), a(n, e(n)[e(n)]);
+        for(var i=e(n), o=v(n); o; o=o.c)if(i in o.M) {
+            a(n, o.M[i]);
+            return
+        }
+        throw 'ball'
+    }
+
+op 108  (x88)   =>  SETPROPx4
+    function(n, e, a, v, i, o) {
+        for(var a=0; a<4; a++)e(n)[e(n)]=e(n)
+    }
+
+op 109  (x210548)   =>  SETVAR (chain walk)
+    function(n, e, a, v, i, o) {
+        for(var i=e(n), o=e(n), r=v(n); r; r=r.c)if(i in r.M) {
+            r.M[i]=o;
+            return
+        }
+        throw 'ball'
+    }
+
+op 110  (x1336)   =>  CHECKFALSECALLSTORE (cond jump if falsy)
+    function(n, e, a, v, i, o) {
+        e(n)?e(n):n.r[0]=e(n)
+    }
+
+op 111  (x3)   =>  SUB       e(n)-r(n)    (e-G)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, e(n)-r(n))
+    }
+
+op 112  (x188296)   =>  JMP (n.r[0]=target; PC)
+    function(n, e, a, v, i, o) {
+        n.r[0]=e(n)
+    }
+
+op 114  (x118)   =>  SETPROPx5
+    function(n, e, a, v, i, o) {
+        for(var a=0; a<5; a++)e(n)[e(n)]=e(n)
+    }
+
+op 115  (x1838)   =>  DECLAREx2 (var@i=0 = value e(n); var@i=1 = undef)
+    function(n, e, a, v, i, o) {
+        for(var i=v(n), o=0; o<2; o++) {
+            var r=e(n);
+            i.M[r]=o===0?e(n):void 0
+        }
+    }
+
+op 116  (x13)   =>  MUL       e(n)*e(n)    (e*e)
+    function(n, e, a, v, i, o) {
+        a(n, e(n)*e(n))
+    }
+
+op 117  (x7)   =>  BOR       e(n)|e(n)    (e|e)
+    function(n, e, a, v, i, o) {
+        a(n, e(n)|e(n))
+    }
+
+op 118  (x6644)   =>  CREATEARR + SETPROP
+    function(n, e, a, v, i, o) {
+        a(n, new Array(e(n))), e(n)[e(n)]=e(n)
+    }
+
+op 119  (x1156)   =>  SETVARx2 + SETVARUNDEF
+    function(n, e, a, v, i, o) {
+        for(var i=v(n), o=0; o<2; o++) {
+            var r=e(n), l=e(n);
+            i.M[r]=l
+        }
+        var u=e(n);
+        i.M[u]=void 0
+    }
+
+op 120  (x324)   =>  GETPROPx2
+    function(n, e, a, v, i, o) {
+        a(n, e(n)[e(n)]), a(n, e(n)[e(n)])
+    }
+
+op 121  (x7)   =>  GETCHECKSAMEVARBOOL (G==G, loose eq)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)==r(n))
+    }
+
+op 122  (x212)   =>  TONUM (reg = +val)
+    function(n, e, a, v, i, o) {
+        a(n, +e(n))
+    }
+
+op 123  (x2)   =>  GETPROPx2 + GETVAR + GETPROP
+    function(n, e, a, v, i, o) {
+        a(n, e(n)[e(n)]), a(n, e(n)[e(n)]);
+        for(var i=e(n), o=v(n); o; o=o.c)if(i in o.M) {
+            a(n, o.M[i]), a(n, e(n)[e(n)]);
+            return
+        }
+        throw 'ball'
+    }
+
+op 124  (x121)   =>  BITANDS (BAND, G&G)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)&r(n))
+    }
+
+op 125  (x762)   =>  GETPROP + CREATEARR + GETVAR
+    function(n, e, a, v, i, o) {
+        a(n, e(n)[e(n)]), a(n, new Array(e(n)));
+        for(var i=e(n), o=v(n); o; o=o.c)if(i in o.M) {
+            a(n, o.M[i]);
+            return
+        }
+        throw 'ball'
+    }
+
+op 126  (x138)   =>  GETPROP + GETVAR
+    function(n, e, a, v, i, o) {
+        a(n, e(n)[e(n)]);
+        for(var i=e(n), o=v(n); o; o=o.c)if(i in o.M) {
+            a(n, o.M[i]);
+            return
+        }
+        throw 'ball'
+    }
+
+op 127  (x167356)   =>  GETVAL (reg=operand; MOV)
+    function(n, e, a, v, i, o) {
+        a(n, e(n))
+    }
+
+op 128  (x13330)   =>  CALL (= op74 core: VM-fn reenter in place, else apply)
+    function(n, e, a, v, i, o) {
+        var r=e(n), l=e(n), u=e(n), _=o[4];
+        if(l[_]&&l[_].I===l) {
+            var h;
+            n.r=[l[_].V, {
+                u:r,
+                i:l,
+                r:n.r,
+                M:[],
+                c:l[_].c,
+                Z:(h=n.w)===null||h===void 0?void 0:h.get(l[_].Z)
+            }, void 0, function() {
+                return arguments
+            }.apply(void 0, u)];
+            for(var t=0; t<u.length; t++)n.r.push(u[t])
+        } else n.r[2]=l.apply(r, u)
+    }
+
+op 129  (x1035)   =>  SNEQ      r(n)!==r(n)  (G!==G)  strict !==
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)!==r(n))
+    }
+
+op 130  (x599)   =>  CREATEARR + GETVAR + SETPROP + CALL
+    function(n, e, a, v, i, o) {
+        a(n, new Array(e(n)));
+        for(var r=e(n), l=v(n); l; l=l.c)if(r in l.M) {
+            a(n, l.M[r]), e(n)[e(n)]=e(n);
+            var u=e(n), _=e(n), h=e(n), t=o[4];
+            if(_[t]&&_[t].I===_) {
+                var b;
+                n.r=[_[t].V, {
+                    u:u,
+                    i:_,
+                    r:n.r,
+                    M:[],
+                    c:_[t].c,
+                    Z:(b=n.w)===null||b===void 0?void 0:b.get(_[t].Z)
+                }, void 0, function() {
+                    return arguments
+                }.apply(void 0, h)];
+                for(var d=0; d<h.length; d++)n.r.push(h[d])
+            } else n.r[2]=_.apply(u, h);
+            return
+        }
+        throw 'ball'
+    }
+
+op 131  (x284)   =>  SETVAR + GETVAR + GETPROP
+    function(n, e, a, v, i, o) {
+        var i=e(n), o=e(n), r=v(n);
+        r.M[i]=o;
+        for(var l=e(n), u=v(n); u; u=u.c)if(l in u.M) {
+            a(n, u.M[l]), a(n, e(n)[e(n)]);
+            return
+        }
+        throw 'ball'
+    }
+
+op 132  (x3300)   =>  GETVARx3
+    function(n, e, a, v, i, o) {
+        for(var i=0; i<3; i++) {
+            for(var o=e(n), r=!1, l=v(n); l; l=l.c)if(o in l.M) {
+                a(n, l.M[o]), r=!0;
+                break
+            }
+            if(!r)throw 'ball'
+        }
+    }
+
+op 133  (x6687)   =>  SETUNDEF (declare 1)
+    function(n, e, a, v, i, o) {
+        var i=e(n), o=v(n);
+        o.M[i]=void 0
+    }
+
+op 134  (x4921)   =>  GETEMPTYARR (reg=[])
+    function(n, e, a, v, i, o) {
+        a(n, [])
+    }
+
+op 135  (x1012)   =>  MUL       r(n)*e(n)    (G*e)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)*e(n))
+    }
+
+op 136  (x8)   =>  BLSHIFT   r(n)<<r(n)   (G<<G)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)<<r(n))
+    }
+
+op 137  (x1569)   =>  SETPROPx2
+    function(n, e, a, v, i, o) {
+        e(n)[e(n)]=e(n), e(n)[e(n)]=e(n)
+    }
+
+op 138  (x204096)   =>  GETVAL (reg=operand; MOV)
+    function(n, e, a, v, i, o) {
+        a(n, e(n))
+    }
+
+op 139  (x792)   =>  ET        r(n)===r(n)  (G===G)  strict ===
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)===r(n))
+    }
+
+op 140  (x1)   =>  BOR       e(n)|e(n)    (e|e)
+    function(n, e, a, v, i, o) {
+        a(n, e(n)|e(n))
+    }
+
+op 141  (x183620)   =>  ADD       e(n)+e(n)    (e+e)
+    function(n, e, a, v, i, o) {
+        a(n, e(n)+e(n))
+    }
+
+op 142  (x8211)   =>  CARR      new Array(e(n))
+    function(n, e, a, v, i, o) {
+        a(n, new Array(e(n)))
+    }
+
+op 143  (x2025)   =>  VALLTBOOL (v<i)
+    function(n, e, a, v, i, o) {
+        var v=e(n), i=e(n);
+        a(n, v<i)
+    }
+
+op 144  (x58)   =>  LTET      r(n)<=r(n)   (G<=G)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)<=r(n))
+    }
+
+op 145  (x444)   =>  MOD       r(n)%r(n)    (G%G)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)%r(n))
+    }
+
+op 146  (x24)   =>  SETPROPx3 + GETVAR
+    function(n, e, a, v, i, o) {
+        e(n)[e(n)]=e(n), e(n)[e(n)]=e(n), e(n)[e(n)]=e(n);
+        for(var i=e(n), o=v(n); o; o=o.c)if(i in o.M) {
+            a(n, o.M[i]);
+            return
+        }
+        throw 'ball'
+    }
+
+op 147  (x623082)   =>  DIV       e(n)/e(n)    (e/e)
+    function(n, e, a, v, i, o) {
+        a(n, e(n)/e(n))
+    }
+
+op 148  (x235)   =>  GETHOTGLOBAL (i[1][1])
+    function(n, e, a, v, i, o) {
+        a(n, i[1][1])
+    }
+
+op 149  (x360)   =>  ADD       e(n)+r(n)    (e+G)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, e(n)+r(n))
+    }
+
+op 150  (x5)   =>  GETPROP + GETVAR + GETPROP
+    function(n, e, a, v, i, o) {
+        a(n, e(n)[e(n)]);
+        for(var i=e(n), o=v(n); o; o=o.c)if(i in o.M) {
+            a(n, o.M[i]), a(n, e(n)[e(n)]);
+            return
+        }
+        throw 'ball'
+    }
+
+op 151  (x178)   =>  GETVARx3 + GETPROP
+    function(n, e, a, v, i, o) {
+        for(var i=0; i<3; i++) {
+            for(var o=e(n), r=!1, l=v(n); l; l=l.c)if(o in l.M) {
+                a(n, l.M[o]), r=!0;
+                break
+            }
+            if(!r)throw 'ball'
+        }
+        a(n, e(n)[e(n)])
+    }
+
+op 152  (x1256)   =>  GETEMPTYOBJ (reg={})
+    function(n, e, a, v, i, o) {
+        a(n, {
+        })
+    }
+
+op 153  (x5875)   =>  JMP (n.r[0]=target; PC)
+    function(n, e, a, v, i, o) {
+        n.r[0]=e(n)
+    }
+
+op 154  (x64)   =>  SETPROPx2 + GETVAR
+    function(n, e, a, v, i, o) {
+        e(n)[e(n)]=e(n), e(n)[e(n)]=e(n);
+        for(var i=e(n), o=v(n); o; o=o.c)if(i in o.M) {
+            a(n, o.M[i]);
+            return
+        }
+        throw 'ball'
+    }
+
+op 155  (x5997)   =>  CHECKZEROBOOL (reg = !val, logical NOT)
+    function(n, e, a, v, i, o) {
+        a(n, !e(n))
+    }
+
+op 156  (x25)   =>  LOOPx2: SETVAR + GETVAR + GETPROP@i=0
+    function(n, e, a, v, i, o) {
+        for(var i=0; i<2; i++) {
+            for(var o=e(n), r=e(n), l=!1, u=v(n); u; u=u.c)if(o in u.M) {
+                u.M[o]=r, l=!0;
+                break
+            }
+            if(!l)throw 'ball';
+            for(var _=e(n), h=!1, t=v(n); t; t=t.c)if(_ in t.M) {
+                a(n, t.M[_]), h=!0;
+                break
+            }
+            if(!h)throw 'ball';
+            i===0&&a(n, e(n)[e(n)])
+        }
+    }
+
+op 157  (x1691)   =>  GETVAR (single)
+    function(n, e, a, v, i, o) {
+        for(var i=e(n), o=v(n); o; o=o.c)if(i in o.M) {
+            a(n, o.M[i]);
+            return
+        }
+        throw 'ball'
+    }
+
+op 158  (x81)   =>  GETVAR + SETPROPx2
+    function(n, e, a, v, i, o) {
+        for(var i=e(n), o=v(n); o; o=o.c)if(i in o.M) {
+            a(n, o.M[i]), e(n)[e(n)]=e(n), e(n)[e(n)]=e(n);
+            return
+        }
+        throw 'ball'
+    }
+
+op 159  (x2065)   =>  GETCHECKSAMEVARBOOL (v==i, loose eq)
+    function(n, e, a, v, i, o) {
+        var v=e(n), i=e(n);
+        a(n, v==i)
+    }
+
+op 160  (x339)   =>  KEYEXISTBOOL (e in G)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, e(n)in r(n))
+    }
+
+op 161  (x4722)   =>  SETFRAMEVAL (scope.z = catch-handler PC)
+    function(n, e, a, v, i, o) {
+        var a=e(n);
+        n.r[1].z=a
+    }
+
+op 162  (x1775)   =>  SETVAR + GETVAR
+    function(n, e, a, v, i, o) {
+        var i=e(n), o=e(n), r=v(n);
+        r.M[i]=o;
+        for(var l=e(n), u=v(n); u; u=u.c)if(l in u.M) {
+            a(n, u.M[l]);
+            return
+        }
+        throw 'ball'
+    }
+
+op 163  (x195)   =>  CREATEREGEXP
+    function(n, e, a, v, i, o) {
+        a(n, new RegExp(e(n), e(n)))
+    }
+
+op 164  (x13508)   =>  RETURN (value)
+    function(n, e, a, v, i, o) {
+        var r=o[0], l=e(n);
+        r(n, l)
+    }
+
+op 165  (x534)   =>  GETFRAMEVAL (scope.u = this)
+    function(n, e, a, v, i, o) {
+        a(n, n.r[1].u)
+    }
+
+op 167  (x1238)   =>  SETVAR (chain walk)
+    function(n, e, a, v, i, o) {
+        for(var i=e(n), o=e(n), r=v(n); r; r=r.c)if(i in r.M) {
+            r.M[i]=o;
+            return
+        }
+        throw 'ball'
+    }
+
+op 168  (x164994)   =>  GT        e(n)>r(n)    (e>G)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, e(n)>r(n))
+    }
+
+op 169  (x83)   =>  SUB       r(n)-e(n)    (G-e)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)-e(n))
+    }
+
+op 170  (x139)   =>  FRAMEUNDEF (clear n.e exception)
+    function(n, e, a, v, i, o) {
+        n.e=void 0
+    }
+
+op 171  (x15)   =>  MUL       e(n)*r(n)    (e*G)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, e(n)*r(n))
+    }
+
+op 172  (x205371)   =>  CHECKFALSECALLSTORE (cond jump if falsy)
+    function(n, e, a, v, i, o) {
+        e(n)?e(n):n.r[0]=e(n)
+    }
+
+op 173  (x191416)   =>  GETHANDLER (reg=i[3]=u)
+    function(n, e, a, v, i, o) {
+        a(n, i[3])
+    }
+
+op 174  (x52)   =>  GETPROP + CREATEARR + GETVAR
+    function(n, e, a, v, i, o) {
+        a(n, e(n)[e(n)]), a(n, new Array(e(n)));
+        for(var i=e(n), o=v(n); o; o=o.c)if(i in o.M) {
+            a(n, o.M[i]);
+            return
+        }
+        throw 'ball'
+    }
+
+op 175  (x887)   =>  CALL2 (reg=callee(a,b))
+    function(n, e, a, v, i, o) {
+        var v=e(n), i=e(n), o=e(n);
+        a(n, v(i, o))
+    }
+
+op 176  (x1)   =>  THROW (o[1]=D)
+    function(n, e, a, v, i, o) {
+        var r=o[1], l=e(n);
+        r(n, l)
+    }
+
+op 177  (x1712)   =>  GETVARx2 + GETPROP
+    function(n, e, a, v, i, o) {
+        for(var i=0; i<2; i++) {
+            for(var o=e(n), r=!1, l=v(n); l; l=l.c)if(o in l.M) {
+                a(n, l.M[o]), r=!0;
+                break
+            }
+            if(!r)throw 'ball'
+        }
+        a(n, e(n)[e(n)])
+    }
+
+op 178  (x769)   =>  MUL       r(n)*r(n)    (G*G)
+    function(n, e, a, v, i, o) {
+        var r=o[5];
+        a(n, r(n)*r(n))
+    }
+
+op 179  (x814)   =>  CONSTRUCT/NEW (reg = new v(...args))
+    function(n, e, a, v, i, o) {
+        var v=e(n), i=e(n).slice();
+        i.unshift(void 0), a(n, new(Function.bind.apply(v, i)))
+    }
+
+op 180  (x776)   =>  SETVAR + GETVAR + GETPROP
+    function(n, e, a, v, i, o) {
+        for(var i=e(n), o=e(n), r=v(n); r; r=r.c)if(i in r.M) {
+            r.M[i]=o;
+            for(var l=e(n), u=v(n); u; u=u.c)if(l in u.M) {
+                a(n, u.M[l]), a(n, e(n)[e(n)]);
+                return
+            }
+            throw 'ball'
+        }
+        throw 'ball'
+    }
+
+op 181  (x919)   =>  CREATEARR + GETVAR
+    function(n, e, a, v, i, o) {
+        a(n, new Array(e(n)));
+        for(var i=e(n), o=v(n); o; o=o.c)if(i in o.M) {
+            a(n, o.M[i]);
+            return
+        }
+        throw 'ball'
+    }
